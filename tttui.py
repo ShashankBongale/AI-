@@ -77,7 +77,6 @@ def drawMove(board,row,col,player):
 def clickBoard(board,player):
 	(mouseX, mouseY) = pygame.mouse.get_pos()
 	(row, col) = boardPos(mouseX, mouseY)
-	drawMove (board, row, col,player)
 	return (row,col)
 def empty_list(new_board):
 	l = []
@@ -144,11 +143,16 @@ def minimax(new_board,player):
 				best_move = i
 	return moves[best_move]
 def show_message(background,text):
+	if(text == "Computer Won"):
+		background_colour = (255,0,0)
+		font_colour = (0,0,0)
+	else:
+		background_colour = (255,140,0)
+		font_colour = (65,105,225)
 	pygame.display.update()
-	background.fill((255,235,205))
-	largetext = pygame.font.Font('/home/shashank/Desktop/AI/font/Action_Man.ttf',25)
-	colour = (100,149,237)
-	TextSurf = largetext.render(text,True,colour)
+	background.fill(background_colour)
+	largetext = pygame.font.Font('/home/shashank/Desktop/AI/font/Action_Man.ttf',35)
+	TextSurf = largetext.render(text,True,font_colour)
 	TextRect = TextSurf.get_rect()
 	TextRect.center = ((150,150))
 	background.blit(TextSurf,TextRect)
@@ -163,6 +167,7 @@ human_player = 'O'
 """
 Building board
 """
+mark_array = [0,0,0,0,0,0,0,0,0]
 pygame.init()
 background = pygame.display.set_mode((300,300))
 pygame.display.set_caption("Hello World")
@@ -171,6 +176,8 @@ pygame.draw.line (background, (0,0,0), (100, 0), (100, 300), 2)
 pygame.draw.line (background, (0,0,0), (200, 0), (200, 300), 2)
 pygame.draw.line (background, (0,0,0), (0, 100), (300, 100), 2)
 pygame.draw.line (background, (0,0,0), (0, 200), (300, 200), 2)
+pygame.draw.line (background, (0,0,0), (0, 300), (300, 300), 2)
+
 while(True):
 	available = empty_list(origin_board)
 	for event in pygame.event.get():
@@ -181,39 +188,43 @@ while(True):
 		elif event.type is pygame.MOUSEBUTTONDOWN:
 			(row,col) = clickBoard(background,human_player)
 			r = rc_to_r(row,col)
-			origin_board[r] = 'O'
-			pygame.display.update()
-			time.sleep(1)
-			best_spot = minimax(origin_board,ai_player)
-			key = list(best_spot.keys())
-			print(key)
-			if(key[0] != 'score'):
-				origin_board[key[0]] = 'X'
-				(row,col) = r_to_rc(key[0])
-				drawMove(background,row,col,ai_player)
+			if(mark_array[r] == 0):
+				origin_board[r] = 'O'
+				drawMove (background, row, col,human_player)
 				pygame.display.update()
-			available = empty_list(origin_board)
-			if(winning_combination(origin_board,ai_player)):
-				print("Computer Won")
-				text = "Computer Won"
-				pygame.display.update()
-				time.sleep(2)
-				show_message(background,text)
-				time.sleep(2)
-				pygame.quit()
-				sys.exit()
-			elif(winning_combination(origin_board,human_player)):
-				print("You Won")
-				time.sleep(1)
-				pygame.quit()
-				sys.exit()
-			elif(len(available) == 0):
-				print("Tie")
-				text = "Tie"
-				pygame.display.update()
-				time.sleep(2)
-				show_message(background,text)
-				time.sleep(2)
-				pygame.quit()
-				sys.exit()
+				time.sleep(0.3)
+				best_spot = minimax(origin_board,ai_player)
+				key = list(best_spot.keys())
+				print(key)
+				if(key[0] != 'score'):
+					origin_board[key[0]] = 'X'
+					mark_array[key[0]] = 1
+					(row,col) = r_to_rc(key[0])
+					drawMove(background,row,col,ai_player)
+					pygame.display.update()
+				available = empty_list(origin_board)
+				if(winning_combination(origin_board,ai_player)):
+					print("Computer Won")
+					text = "Computer Won"
+					pygame.display.update()
+					time.sleep(0.9)
+					show_message(background,text)
+					time.sleep(2)
+					pygame.quit()
+					sys.exit()
+				elif(winning_combination(origin_board,human_player)):
+					print("You Won")
+					time.sleep(1)
+					pygame.quit()
+					sys.exit()
+				elif(len(available) == 0):
+					print("Tie")
+					text = "Tie"
+					pygame.display.update()
+					time.sleep(0.9)
+					show_message(background,text)
+					time.sleep(2)
+					pygame.quit()
+					sys.exit()
+				mark_array[r] = 1
 	pygame.display.update()
