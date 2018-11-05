@@ -143,6 +143,17 @@ def minimax(new_board,player):
 				best_score = moves[i][keys[i]]
 				best_move = i
 	return moves[best_move]
+def show_message(background,text):
+	pygame.display.update()
+	background.fill((255,235,205))
+	largetext = pygame.font.Font('/home/shashank/Desktop/AI/font/Action_Man.ttf',25)
+	colour = (100,149,237)
+	TextSurf = largetext.render(text,True,colour)
+	TextRect = TextSurf.get_rect()
+	TextRect.center = ((150,150))
+	background.blit(TextSurf,TextRect)
+	pygame.display.update()
+
 """
 Main Program Startting
 """
@@ -171,6 +182,8 @@ while(True):
 			(row,col) = clickBoard(background,human_player)
 			r = rc_to_r(row,col)
 			origin_board[r] = 'O'
+			pygame.display.update()
+			time.sleep(1)
 			best_spot = minimax(origin_board,ai_player)
 			key = list(best_spot.keys())
 			print(key)
@@ -178,11 +191,15 @@ while(True):
 				origin_board[key[0]] = 'X'
 				(row,col) = r_to_rc(key[0])
 				drawMove(background,row,col,ai_player)
+				pygame.display.update()
 			available = empty_list(origin_board)
 			if(winning_combination(origin_board,ai_player)):
 				print("Computer Won")
+				text = "Computer Won"
 				pygame.display.update()
-				time.sleep(1)
+				time.sleep(2)
+				show_message(background,text)
+				time.sleep(2)
 				pygame.quit()
 				sys.exit()
 			elif(winning_combination(origin_board,human_player)):
@@ -192,8 +209,11 @@ while(True):
 				sys.exit()
 			elif(len(available) == 0):
 				print("Tie")
+				text = "Tie"
 				pygame.display.update()
-				time.sleep(1)
+				time.sleep(2)
+				show_message(background,text)
+				time.sleep(2)
 				pygame.quit()
 				sys.exit()
 	pygame.display.update()
